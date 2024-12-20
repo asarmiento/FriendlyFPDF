@@ -1,0 +1,32 @@
+{
+    "name": "asarmiento/friendly-fpdf",
+    "description": "Una librería amigable para generar PDFs en Laravel usando FPDF",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Asarmiento\\FriendlyFpdf\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Anwar Sarmiento",
+            "email": "info@friendlysystemgroup.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "illuminate/support": "^8.0|^9.0|^10.0",
+        "setasign/fpdf": "^1.8"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Asarmiento\\FriendlyFpdf\\FriendlyFpdfServiceProvider"
+            ],
+            "aliases": {
+                "FriendlyFpdf": "Asarmiento\\FriendlyFpdf\\Facades\\FriendlyFpdf"
+            }
+        }
+    }
+} 
