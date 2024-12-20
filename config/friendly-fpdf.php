@@ -1,13 +1,41 @@
 <?php
 
 return [
-    'default_font' => 'Arial',
-    'default_size' => 12,
-    'margin_left' => 10,
-    'margin_right' => 10,
-    'margin_top' => 10,
-    'margin_bottom' => 10,
-    'orientation' => 'P', // P para portrait, L para landscape
+    /*
+    |--------------------------------------------------------------------------
+    | Default configuration for FPDF
+    |--------------------------------------------------------------------------
+    |
+    | Specify the default values for creating a PDF with FPDF
+    |
+    */
+
+    'orientation' => 'P',
     'unit' => 'mm',
-    'format' => 'A4'
+    'size' => 'A4',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default font settings
+    |--------------------------------------------------------------------------
+    |
+    | Default font settings for the PDF document
+    |
+    */
+    'default_font' => [
+        'family' => 'Helvetica',
+        'style'  => '',
+        'size'   => 12
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vapor Support
+    |--------------------------------------------------------------------------
+    |
+    | If you're using Laravel Vapor, set this to true to add the necessary
+    | headers for proper PDF display
+    |
+    */
+    'vapor_support' => env('FPDF_VAPOR_HEADERS', false),
 ]; 
