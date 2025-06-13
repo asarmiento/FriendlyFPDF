@@ -1,14 +1,19 @@
 # FriendlyFpdf para Laravel
 
-Una librería amigable para generar PDFs en Laravel usando FPDF. Esta librería proporciona una interfaz fluida y fácil de usar para crear documentos PDF en aplicaciones Laravel.
+Una librería amigable para generar PDFs en Laravel usando FPDF. Esta librería proporciona **dos formas de uso**:
+
+1. **Interfaz fluida** (FriendlyFpdf): Métodos encadenables para facilitar el uso
+2. **Inyección de dependencias** (Fpdf): Compatible con el estilo 
 
 ## Características
 
-- Interfaz fluida para generar PDFs
+- **Dos formas de uso**: Interfaz fluida y inyección de dependencias
 - Configuración personalizable
 - Integración sencilla con Laravel
 - Basado en la librería FPDF
 - Soporte para Laravel 8.x, 9.x y 10.x
+- Compatible con Laravel Vapor
+- Inyección de dependencias en rutas y controladores
 
 ## Requisitos
 
@@ -51,7 +56,38 @@ return [
 
 ## Uso Básico
 
-### Crear un PDF Simple
+Ahora puedes usar la librería de **dos formas diferentes**:
+
+### Forma 1: Inyección de Dependencias (/laravel-fpdf)
+
+```php
+// En routes/web.php
+use Asarmiento\FriendlyFpdf\Fpdf;
+
+Route::get('pdf', function (Fpdf $fpdf) {
+    $fpdf->AddPage();
+    $fpdf->SetFont('Arial', 'B', 16);
+    $fpdf->Cell(0, 10, '¡Hola Mundo!', 0, 1, 'C');
+    $fpdf->Output('I', 'documento.pdf');
+});
+
+// En un Controller
+class PdfController extends Controller
+{
+    public function generate(Fpdf $fpdf)
+    {
+        $fpdf->AddPage();
+        $fpdf->SetFont('Arial', 'B', 16);
+        $fpdf->Cell(0, 10, '¡Hola Mundo!', 0, 1, 'C');
+        return response($fpdf->Output('S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="documento.pdf"'
+        ]);
+    }
+}
+```
+
+### Forma 2: Interfaz Fluida (FriendlyFpdf - Original)
 
 ```php
 use Asarmiento\FriendlyFpdf\Facades\FriendlyFpdf;
@@ -61,6 +97,20 @@ public function generatePdf()
     return FriendlyFpdf::addPage()
         ->addText('¡Hola Mundo!', 10, 10)
         ->Output('I', 'documento.pdf');
+}
+```
+
+### Forma 3: Facade Simple 
+
+```php
+use Asarmiento\FriendlyFpdf\Facades\Fpdf;
+
+public function generatePdf()
+{
+    Fpdf::AddPage();
+    Fpdf::SetFont('Arial', 'B', 16);
+    Fpdf::Cell(0, 10, '¡Hola Mundo!', 0, 1, 'C');
+    return Fpdf::Output('I', 'documento.pdf');
 }
 ```
 
@@ -97,7 +147,50 @@ FriendlyFpdf::Output($destination = 'I', $filename = 'doc.pdf');
 
 ## Ejemplos de Uso
 
-### Crear un Documento con Múltiples Elementos
+### Ejemplo con Inyección de Dependencias ()
+
+```php
+use Asarmiento\FriendlyFpdf\Fpdf;
+
+// En routes/web.php
+Route::get('reporte', function (Fpdf $fpdf) {
+    $fpdf->AddPage();
+    $fpdf->SetFont('Arial', 'B', 18);
+    $fpdf->Cell(0, 15, 'Reporte Mensual', 0, 1, 'C');
+    
+    $fpdf->SetFont('Arial', '', 12);
+    $fpdf->Cell(0, 10, 'Fecha: ' . date('Y-m-d'), 0, 1);
+    $fpdf->Cell(0, 10, 'Este es un ejemplo de reporte', 0, 1);
+    
+    $fpdf->Output('D', 'reporte.pdf');
+});
+
+// En un Controller con respuesta personalizada
+class ReporteController extends Controller
+{
+    public function generar(Fpdf $fpdf)
+    {
+        $fpdf->AddPage();
+        $fpdf->SetFont('Arial', 'B', 18);
+        $fpdf->Cell(0, 15, 'Reporte Avanzado', 0, 1, 'C');
+        
+        // Agregar contenido dinámico
+        $data = collect(['Item 1', 'Item 2', 'Item 3']);
+        $fpdf->SetFont('Arial', '', 12);
+        
+        foreach ($data as $item) {
+            $fpdf->Cell(0, 8, $item, 0, 1);
+        }
+        
+        return response($fpdf->Output('S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="reporte.pdf"'
+        ]);
+    }
+}
+```
+
+### Ejemplo con Interfaz Fluida (Original)
 
 ```php
 use Asarmiento\FriendlyFpdf\Facades\FriendlyFpdf;
@@ -115,9 +208,94 @@ public function generateReport()
 ### Guardar PDF en Archivo
 
 ```php
+// Con inyección de dependencias
+Route::get('save-pdf', function (Fpdf $fpdf) {
+    $fpdf->AddPage();
+    $fpdf->SetFont('Arial', '', 12);
+    $fpdf->Cell(0, 10, 'Contenido guardado', 0, 1);
+    $fpdf->Output('F', storage_path('app/pdfs/documento.pdf'));
+    
+    return 'PDF guardado exitosamente';
+});
+
+// Con interfaz fluida
 FriendlyFpdf::addPage()
     ->addText('Contenido del PDF', 10, 10)
     ->Output('F', storage_path('app/pdfs/documento.pdf'));
+```
+
+
+
+2. **El código existente funcionará sin cambios:**
+   ```php
+   // Esto seguirá funcionando exactamente igual
+   Route::get('/', function (xxxxxxx\Fpdf\Fpdf $fpdf) {
+       $fpdf->AddPage();
+       $fpdf->SetFont('Courier', 'B', 18);
+       $fpdf->Cell(50, 25, 'Hello World!');
+       $fpdf->Output();
+   });
+   
+   // Solo cambia el namespace:
+   Route::get('/', function (Asarmiento\FriendlyFpdf\Fpdf $fpdf) {
+       $fpdf->AddPage();
+       $fpdf->SetFont('Courier', 'B', 18);
+       $fpdf->Cell(50, 25, 'Hello World!');
+       $fpdf->Output();
+   });
+   ```
+
+3. **Configuración compatible:**
+   - Mantén la variable de entorno `FPDF_VAPOR_HEADERS=true` para Laravel Vapor
+   - La configuración de fuentes es compatible
+   - Todas las características de FPDF están disponibles
+
+### Ventajas adicionales
+
+Al usar `asarmiento/friendly-fpdf` obtienes:
+
+- ✅ **Interfaz fluida adicional** para desarrollo más rápido
+- ✅ **Mejor configuración** con más opciones predeterminadas
+- ✅ **Facades adicionales** para mayor flexibilidad
+- ✅ **Documentación en español**
+
+## Ejemplos Completos
+
+Para ver ejemplos detallados de todas las formas de uso, consulta el archivo [`examples/usage_examples.php`](examples/usage_examples.php) que incluye:
+
+- 📋 **Reportes con tablas**
+- 🧾 **Facturas completas**
+- 📜 **Certificados**
+- 📊 **Gráficos simples**
+- 📄 **Documentos multipágina**
+- 🔗 **Integración con controladores**
+
+## Documentación Adicional
+
+### Variables de Entorno
+
+```bash
+# Para Laravel Vapor
+FPDF_VAPOR_HEADERS=true
+```
+
+### Configuración Avanzada
+
+```php
+// config/friendly-fpdf.php
+return [
+    'orientation' => 'P',           // P = Portrait, L = Landscape
+    'unit' => 'mm',                // mm, pt, cm, in
+    'size' => 'A4',                // A4, A5, Letter, Legal, etc.
+    
+    'default_font' => [
+        'family' => 'Helvetica',    // Arial, Helvetica, Times, Courier
+        'style'  => '',             // '', 'B', 'I', 'U'
+        'size'   => 12
+    ],
+    
+    'vapor_support' => env('FPDF_VAPOR_HEADERS', false),
+];
 ```
 
 ## Contribuir

@@ -35,7 +35,8 @@
                 "Asarmiento\\FriendlyFpdf\\FriendlyFpdfServiceProvider"
             ],
             "aliases": {
-                "FriendlyFpdf": "Asarmiento\\FriendlyFpdf\\Facades\\FriendlyFpdf"
+                "FriendlyFpdf": "Asarmiento\\FriendlyFpdf\\Facades\\FriendlyFpdf",
+                "Fpdf": "Asarmiento\\FriendlyFpdf\\Facades\\Fpdf"
             }
         }
     },
